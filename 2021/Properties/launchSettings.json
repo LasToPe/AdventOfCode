@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "2021": {
+      "commandName": "Project",
+      "commandLineArgs": "Day3"
+    }
+  }
+}
