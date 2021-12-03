@@ -18,7 +18,6 @@ namespace AoC2021
                     IDay day = Activator.CreateInstance(type) as IDay;
                     day.GetResults();
                 }
-
             }
         }
     }
