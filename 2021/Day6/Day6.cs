@@ -14,8 +14,10 @@ namespace AoC2021.Day6
             string[] input = File.ReadAllLines(@"Day6\input.txt");
 
             ulong task1 = SolveTask(input, 80);
+            Console.WriteLine($"Task 1 - Lanternfish count after 80 days: {task1}");
 
             ulong task2 = SolveTask(input, 256);
+            Console.WriteLine($"Task 2 - Lanternfish count after 256 days: {task2}");
         }
 
         private ulong SolveTask(string[] input, int days)
