@@ -6,13 +6,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day5
+namespace AoC2021.Day05
 {
-    class Day5 : IDay
+    class Day05 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day5\input.txt");
+            string[] input = File.ReadAllLines(@"Day05\input.txt");
 
             int task1 = SolveTask1(input);
             Console.WriteLine($"Task 1 - Overlaps: {task1}");

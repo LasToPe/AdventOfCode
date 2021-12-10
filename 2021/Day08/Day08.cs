@@ -6,13 +6,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day8
+namespace AoC2021.Day08
 {
-    class Day8 : IDay
+    class Day08 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day8\input.txt");
+            string[] input = File.ReadAllLines(@"Day08\input.txt");
 
             int task1 = SolveTask1(input);
             Console.WriteLine($"Task 1 - Simple numbers count: {task1}");

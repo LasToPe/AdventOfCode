@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day6
+namespace AoC2021.Day06
 {
-    class Day6 : IDay
+    class Day06 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day6\input.txt");
+            string[] input = File.ReadAllLines(@"Day06\input.txt");
 
             ulong task1 = SolveTask(input, 80);
             Console.WriteLine($"Task 1 - Lanternfish count after 80 days: {task1}");

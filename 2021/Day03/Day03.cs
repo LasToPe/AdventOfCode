@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day3
+namespace AoC2021.Day03
 {
-    class Day3 : IDay
+    class Day03 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day3\input.txt");
+            string[] input = File.ReadAllLines(@"Day03\input.txt");
 
             int task1 = CalculatePowerConsumption(input);
             Console.WriteLine($"Task 1 - Power Consumption: {task1}");

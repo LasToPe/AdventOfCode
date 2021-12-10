@@ -7,13 +7,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day4
+namespace AoC2021.Day04
 {
-    class Day4 : IDay
+    class Day04 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day4\input.txt");
+            string[] input = File.ReadAllLines(@"Day04\input.txt");
             int[] draws = input[0].Split(',').Select(x => int.Parse(x)).ToArray();
 
             int task1 = SolveTask1(draws, input);

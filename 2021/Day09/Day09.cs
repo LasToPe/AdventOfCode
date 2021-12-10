@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day9
+namespace AoC2021.Day09
 {
-    class Day9 : IDay
+    class Day09 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day9\input.txt");
+            string[] input = File.ReadAllLines(@"Day09\input.txt");
 
             int task1 = SolveTask1(input);
             Console.WriteLine($"Task 1 - Risk level sum: {task1}");

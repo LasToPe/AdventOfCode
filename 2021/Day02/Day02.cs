@@ -6,13 +6,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day2
+namespace AoC2021.Day02
 {
-    class Day2 : IDay
+    class Day02 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day2\input.txt");
+            string[] input = File.ReadAllLines(@"Day02\input.txt");
 
             int task1 = Task1Result(input);
             Console.WriteLine($"Task 1 - Result: {task1}");

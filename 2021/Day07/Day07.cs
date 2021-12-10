@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day7
+namespace AoC2021.Day07
 {
-    class Day7 : IDay
+    class Day07 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day7\input.txt");
+            string[] input = File.ReadAllLines(@"Day07\input.txt");
 
             int task1 = SolveTask1(input);
             Console.WriteLine($"Task 1 - Minimum fuel use: {task1}");

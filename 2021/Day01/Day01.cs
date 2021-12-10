@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AoC2021.Day1
+namespace AoC2021.Day01
 {
-    class Day1 : IDay
+    class Day01 : IDay
     {
         public void GetResults()
         {
-            string[] input = File.ReadAllLines(@"Day1\input.txt");
+            string[] input = File.ReadAllLines(@"Day01\input.txt");
 
             int task1 = Task1Result(input);
             Console.WriteLine($"Task 1 - Increases: {task1}");
