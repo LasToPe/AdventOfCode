@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace AoC2021.Day06
 {
+    // https://adventofcode.com/2021/day/6
     class Day06 : IDay
     {
         public void GetResults()
