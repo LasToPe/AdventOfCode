@@ -50,18 +50,15 @@ namespace AoC2021.Day13
                     {
                         int newRow = newArray.GetLength(0) - Math.Abs(newArray.GetLength(0) - row);
                         newArray[newRow, col] = newArray[newRow, col] || dotArray[row, col];
-                        var qq = newArray[newRow, col];
                     }
                     else if (col > newArray.GetLength(1))
                     {
                         int newCol = newArray.GetLength(1) - Math.Abs(newArray.GetLength(1) - col);
                         newArray[row, newCol] = newArray[row, newCol] || dotArray[row, col];
-                        var qq = newArray[row, newCol];
                     }
                     else
                     {
                         newArray[row, col] = dotArray[row, col];
-                        var qq = newArray[row, col];
                     }
                 }
             }
@@ -99,18 +96,15 @@ namespace AoC2021.Day13
                         {
                             int newRow = newArray.GetLength(0) - Math.Abs(newArray.GetLength(0) - row);
                             newArray[newRow, col] = newArray[newRow, col] || dotArray[row, col];
-                            var qq = newArray[newRow, col];
                         }
                         else if (col > newArray.GetLength(1))
                         {
                             int newCol = newArray.GetLength(1) - Math.Abs(newArray.GetLength(1) - col);
                             newArray[row, newCol] = newArray[row, newCol] || dotArray[row, col];
-                            var qq = newArray[row, newCol];
                         }
                         else
                         {
                             newArray[row, col] = dotArray[row, col];
-                            var qq = newArray[row, col];
                         }
                     }
                 }
