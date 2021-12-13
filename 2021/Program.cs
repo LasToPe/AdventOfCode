@@ -19,6 +19,19 @@ namespace AoC2021
                     day.GetResults();
                 }
             }
+            else
+            {
+                foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(x => x.Name.StartsWith("Day")).OrderBy(x => x.Name))
+                {
+                    IDay day = Activator.CreateInstance(type) as IDay;
+                    Console.WriteLine(type.Name);
+
+                    day.GetResults();
+
+                    Console.WriteLine();
+                }
+                Console.ReadLine();
+            }
         }
     }
 }
