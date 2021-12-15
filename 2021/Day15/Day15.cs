@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AoC2021.Day15
@@ -15,17 +17,22 @@ namespace AoC2021.Day15
             string[] input = File.ReadAllLines(@"Day15\input.txt");
 
             var task1 = SolveTask1(input);
+            Console.WriteLine($"Task 1 - Lowest total risk: {task1}");
 
+            ConsoleSpinner spinner = new();
+            spinner.Start("Working on Task 2");
             var task2 = SolveTask2(input);
+            spinner.Stop();
+            Console.WriteLine($"Task 2 - Lowest total risk full map(!): {task2}");
         }
 
         private object SolveTask1(string[] input)
         {
             List<Point> pointMap = BuildPointMap(input);
 
-            Point start = pointMap.Last(p => p.Y == 0 && p.X == 0);
+            Point start = pointMap.First(p => p.Y == pointMap.Min(p => p.Y) && p.X == pointMap.Min(p => p.X));
             start.MinCostToStart = 0;
-            Point end = pointMap.Last(p => p.Y == 99 && p.X == 99);
+            Point end = pointMap.Last(p => p.Y == pointMap.Max(p => p.Y) && p.X == pointMap.Max(p => p.X));
 
             var shortestPath = GetShortestPath(start, end);
 
@@ -34,13 +41,15 @@ namespace AoC2021.Day15
 
         private object SolveTask2(string[] input)
         {
-            //List<Point> pointMap = BuildPointMap(input);
-            //GeneratorPoint start = new GeneratorPoint(pointMap.First()) { MinCostToStart = 0 };
-            //GeneratorPoint end = new GeneratorPoint(499, 499, pointMap.Last().Risk + 8);
+            List<Point> pointMap = BuildPointMap(input, 5);
 
-            //var shortestPath = GetShortestPathGenerate(start, end, pointMap);
+            Point start = pointMap.First(p => p.Y == pointMap.Min(p => p.Y) && p.X == pointMap.Min(p => p.X));
+            start.MinCostToStart = 0;
+            Point end = pointMap.Last(p => p.Y == pointMap.Max(p => p.Y) && p.X == pointMap.Max(p => p.X));
 
-            throw new NotImplementedException();
+            var shortestPath = GetShortestPath(start, end);
+
+            return shortestPath.Last().MinCostToStart;
         }
 
         private List<Point> GetShortestPath(Point start, Point end)
@@ -48,7 +57,7 @@ namespace AoC2021.Day15
             List<Point> prioQueue = new() { start };
             while (prioQueue.Any())
             {
-                prioQueue = prioQueue.OrderBy(x => x.MinCostToStart + x.StraightLineDistanceToEnd).ToList();
+                prioQueue = prioQueue.OrderBy(x => x.MinCostToStart + x.GetStraightLineDistanceTo(end)).ToList();
                 Point node = prioQueue.First();
                 prioQueue.Remove(node);
 
@@ -80,124 +89,42 @@ namespace AoC2021.Day15
             return shortestPath;
         }
 
-        private List<GeneratorPoint> GetShortestPathGenerate(GeneratorPoint start, GeneratorPoint end, List<Point> smallPointMap)
-        {
-            List<GeneratorPoint> pointMap = new() { start };
-            List<GeneratorPoint> prioQueue = new() { start };
-            while (prioQueue.Any())
-            {
-                prioQueue = prioQueue.OrderBy(x => x.MinCostToStart + x.StraightLineDistanceToEnd).ToList();
-                GeneratorPoint node = prioQueue.First();
-                prioQueue.Remove(node);
-
-                if (node.Y <= smallPointMap.Max(p => p.Y) && node.X <= smallPointMap.Max(p => p.X))
-                {
-                    node.Neighbors = smallPointMap.Where(p => (p.Y == node.Y - 1 && p.X == node.X)
-                                                              || (p.Y == node.Y && p.X == node.X - 1)
-                                                              || (p.Y == node.Y + 1 && p.X == node.X)
-                                                              || (p.Y == node.Y && p.X == node.X + 1))
-                                                  .Select(p => new GeneratorPoint(p))
-                                                  .ToList();
-                    foreach (GeneratorPoint neighbor in node.Neighbors)
-                    {
-                        if (!pointMap.Any(p => p.Y == neighbor.Y && p.X == neighbor.X))
-                            pointMap.Add(neighbor);
-                    }
-                }
-                else
-                {
-                    int yRef = node.Y % 100;
-                    int xRef = node.X % 100;
-                    int yMod = node.Y / 100;
-                    int xMod = node.X / 100;
-
-                    node.Neighbors = pointMap.Where(p => (p.Y == node.Y - 1 && p.X == node.X)
-                                                              || (p.Y == node.Y && p.X == node.X - 1)
-                                                              || (p.Y == node.Y + 1 && p.X == node.X)
-                                                              || (p.Y == node.Y && p.X == node.X + 1)).ToList();
-
-                    node.Neighbors.AddRange(smallPointMap.Where(p => (p.Y == yRef - 1 && p.X == xRef)
-                                                                     || (p.Y == yRef && p.X == xRef - 1)
-                                                                     || (p.Y == yRef + 1 && p.X == xRef)
-                                                                     || (p.Y == yRef && p.X == xRef + 1))
-                                                         .Select(p => new GeneratorPoint(yRef + yMod * 100,
-                                                                                  xRef + xMod * 100,
-                                                                                  p.Risk + yMod + xMod))
-                                                         .Where(p => !node.Neighbors.Any(n => n.Y == p.Y && n.X == p.X)));
-
-                    foreach (GeneratorPoint neighbor in node.Neighbors)
-                    {
-                        if (!pointMap.Any(p => p.Y == neighbor.Y && p.X == neighbor.X))
-                            pointMap.Add(neighbor);
-                    }
-                }
-
-                foreach (GeneratorPoint point in node.Neighbors)
-                {
-                    if (point.Visited) continue;
-
-                    if (point.MinCostToStart == null
-                        || node.MinCostToStart + point.Risk < point.MinCostToStart)
-                    {
-                        point.MinCostToStart = node.MinCostToStart + point.Risk;
-                        point.NearestToStart = node;
-
-                        if (!prioQueue.Contains(point)) prioQueue.Add(point);
-                    }
-                }
-                node.Visited = true;
-                if (node == end) break;
-            }
-
-            List<GeneratorPoint> shortestPath = new() { end };
-            while (!shortestPath.Contains(start))
-            {
-                GeneratorPoint node = shortestPath.Last();
-                shortestPath.Add(node.NearestToStart);
-            }
-            shortestPath.Reverse();
-
-            return shortestPath;
-        }
-
         private List<Point> BuildPointMap(string[] input, int times = 1)
         {
             int yMax = input.Length;
             int xMax = input[0].Length;
 
             List<Point> points = new();
-            for (int line = 0; line < yMax; line++)
+            for (int yTime = 0; yTime < times; yTime++)
             {
-                for (int x = 0; x < xMax; x++)
+                for (int line = 0; line < yMax; line++)
                 {
-                    Point point = new Point(line, x, int.Parse(input[line].Substring(x, 1)));
-                    point.AddNeighbors(points.Where(p => (p.Y == line - 1 && p.X == x)          // above
-                                                         || (p.Y == line && p.X == x - 1)));    // left
-                    points.Add(point);
-                }
-            }
-
-            if (times == 1) return points;
-
-            for (int i = 0; i < points.Count; i++)
-            {
-                Point point = points[i];
-                for (int y = 0; y < times; y++)
-                {
-                    int yVal = point.Y + y * yMax;
-                    for (int x = 0; x < times; x++)
+                    int yVal = line + yTime * yMax;
+                    for (int xTime = 0; xTime < times; xTime++)
                     {
-                        if (y == 0 && x == 0) break;
+                        for (int x = 0; x < xMax; x++)
+                        {
+                            int xVal = x + xTime * xMax;
 
-                        int xVal = point.X + x * xMax;
-                        Point newPoint = new Point(yVal, xVal, point.Risk + y + x);
-                        newPoint.AddNeighbors(points.Where(p => (p.Y == yVal - 1 && p.X == xVal)          // above
-                                                                || (p.Y == yVal && p.X == xVal - 1)));    // left
+                            int risk = int.Parse(input[line].Substring(x, 1)) + yTime + xTime;
+                            if (risk > 9)
+                                risk -= 9;
 
-                        points.Add(point);
+                            Point point = new Point(yVal, xVal, risk);
+                            points.Add(point);
+                        } 
                     }
-                }
+                } 
             }
+
+            Parallel.ForEach(points, point =>
+            {
+                var neighbors = points.Where(p => (p.Y == point.Y - 1 && p.X == point.X)
+                                                   || (p.Y == point.Y && p.X == point.X + 1)
+                                                   || (p.Y == point.Y + 1 && p.X == point.X)
+                                                   || (p.Y == point.Y && p.X == point.X - 1));
+                point.AddNeighbors(neighbors);
+            });
 
             return points;
         }
@@ -211,7 +138,6 @@ namespace AoC2021.Day15
 
         public bool Visited { get; set; }
         public int? MinCostToStart { get; set; }
-        public double StraightLineDistanceToEnd => Math.Sqrt(Math.Pow(99 - X, 2) + Math.Pow(99 - Y, 2));
         public List<Point> Neighbors { get; } = new();
         public Point NearestToStart { get; set; }
 
@@ -237,47 +163,10 @@ namespace AoC2021.Day15
                 point.AddNeighbor(this);
             }
         }
-    }
 
-    class GeneratorPoint
-    {
-        public int Y { get; private set; }
-        public int X { get; private set; }
-        public int Risk { get; private set; }
-
-        public bool Visited { get; set; }
-        public int? MinCostToStart { get; set; }
-        public double StraightLineDistanceToEnd => Math.Sqrt(Math.Pow(499 - X, 2) + Math.Pow(499 - Y, 2));
-        public List<GeneratorPoint> Neighbors { get; set; } = new();
-        public GeneratorPoint NearestToStart { get; set; }
-
-        public GeneratorPoint(int y, int x, int risk)
+        public double GetStraightLineDistanceTo(Point end)
         {
-            Y = y;
-            X = x;
-            Risk = risk;
+            return Math.Sqrt(Math.Pow(end.X - X, 2) + Math.Pow(end.Y - Y, 2));
         }
-        public GeneratorPoint(Point point)
-        {
-            Y = point.Y;
-            X = point.X;
-            Risk = point.Risk;
-        }
-
-        //public void AddNeighbors(IEnumerable<Point> points)
-        //{
-        //    foreach (Point point in points)
-        //    {
-        //        AddNeighbor(point);
-        //    }
-        //}
-        //public void AddNeighbor(Point point)
-        //{
-        //    if (!Neighbors.Contains(point))
-        //    {
-        //        Neighbors.Add(point);
-        //        point.AddNeighbor(this);
-        //    }
-        //}
     }
 }
