@@ -28,31 +28,31 @@ namespace AoC2021.Day15
 
         private object SolveTask1(string[] input)
         {
-            List<Point> pointMap = BuildPointMap(input);
+            Dictionary<(int y, int x), Point> pointMap = BuildPointMap(input);
 
-            Point start = pointMap.First(p => p.Y == pointMap.Min(p => p.Y) && p.X == pointMap.Min(p => p.X));
+            Point start = pointMap[(pointMap.Keys.Min(p => p.y), pointMap.Keys.Min(p => p.x))];
             start.MinCostToStart = 0;
-            Point end = pointMap.Last(p => p.Y == pointMap.Max(p => p.Y) && p.X == pointMap.Max(p => p.X));
+            Point end = pointMap[(pointMap.Keys.Max(p => p.y), pointMap.Keys.Max(p => p.x))];
 
-            var shortestPath = GetShortestPath(start, end);
+            var shortestPath = GetShortestPath(start, end, pointMap);
 
             return shortestPath.Last().MinCostToStart;
         }
 
         private object SolveTask2(string[] input)
         {
-            List<Point> pointMap = BuildPointMap(input, 5);
+            Dictionary<(int y, int x), Point> pointMap = BuildPointMap(input, 5);
 
-            Point start = pointMap.First(p => p.Y == pointMap.Min(p => p.Y) && p.X == pointMap.Min(p => p.X));
+            Point start = pointMap[(pointMap.Keys.Min(p => p.y), pointMap.Keys.Min(p => p.x))];
             start.MinCostToStart = 0;
-            Point end = pointMap.Last(p => p.Y == pointMap.Max(p => p.Y) && p.X == pointMap.Max(p => p.X));
+            Point end = pointMap[(pointMap.Keys.Max(p => p.y), pointMap.Keys.Max(p => p.x))];
 
-            var shortestPath = GetShortestPath(start, end);
+            var shortestPath = GetShortestPath(start, end, pointMap);
 
             return shortestPath.Last().MinCostToStart;
         }
 
-        private List<Point> GetShortestPath(Point start, Point end)
+        private List<Point> GetShortestPath(Point start, Point end, Dictionary<(int y, int x), Point> pointMap)
         {
             List<Point> prioQueue = new() { start };
             while (prioQueue.Any())
@@ -60,6 +60,11 @@ namespace AoC2021.Day15
                 prioQueue = prioQueue.OrderBy(x => x.MinCostToStart + x.GetStraightLineDistanceTo(end)).ToList();
                 Point node = prioQueue.First();
                 prioQueue.Remove(node);
+
+                if (pointMap.TryGetValue((node.Y - 1, node.X), out Point north)) node.AddNeighbor(north);
+                if (pointMap.TryGetValue((node.Y, node.X + 1), out Point east)) node.AddNeighbor(east);
+                if (pointMap.TryGetValue((node.Y + 1, node.X), out Point south)) node.AddNeighbor(south);
+                if (pointMap.TryGetValue((node.Y, node.X - 1), out Point west)) node.AddNeighbor(west);
 
                 foreach (Point point in node.Neighbors)
                 {
@@ -89,12 +94,12 @@ namespace AoC2021.Day15
             return shortestPath;
         }
 
-        private List<Point> BuildPointMap(string[] input, int times = 1)
+        private Dictionary<(int y, int x), Point> BuildPointMap(string[] input, int times = 1)
         {
             int yMax = input.Length;
             int xMax = input[0].Length;
 
-            List<Point> points = new();
+            Dictionary<(int y, int x), Point> points = new();
             for (int yTime = 0; yTime < times; yTime++)
             {
                 for (int line = 0; line < yMax; line++)
@@ -111,20 +116,11 @@ namespace AoC2021.Day15
                                 risk -= 9;
 
                             Point point = new Point(yVal, xVal, risk);
-                            points.Add(point);
-                        } 
+                            points.Add((yVal, xVal), point);
+                        }
                     }
-                } 
+                }
             }
-
-            Parallel.ForEach(points, point =>
-            {
-                var neighbors = points.Where(p => (p.Y == point.Y - 1 && p.X == point.X)
-                                                   || (p.Y == point.Y && p.X == point.X + 1)
-                                                   || (p.Y == point.Y + 1 && p.X == point.X)
-                                                   || (p.Y == point.Y && p.X == point.X - 1));
-                point.AddNeighbors(neighbors);
-            });
 
             return points;
         }
@@ -148,13 +144,6 @@ namespace AoC2021.Day15
             Risk = risk;
         }
 
-        public void AddNeighbors(IEnumerable<Point> points)
-        {
-            foreach (Point point in points)
-            {
-                AddNeighbor(point);
-            }
-        }
         public void AddNeighbor(Point point)
         {
             if (!Neighbors.Contains(point))
@@ -163,7 +152,6 @@ namespace AoC2021.Day15
                 point.AddNeighbor(this);
             }
         }
-
         public double GetStraightLineDistanceTo(Point end)
         {
             return Math.Sqrt(Math.Pow(end.X - X, 2) + Math.Pow(end.Y - Y, 2));
