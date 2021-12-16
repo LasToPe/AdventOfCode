@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AoC2021
+namespace AoCCommon
 {
-    interface IDay
+    public interface IDay
     {
         void GetResults();
     }

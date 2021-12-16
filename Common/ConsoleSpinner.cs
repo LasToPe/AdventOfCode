@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AoC2021
+namespace AoCCommon
 {
-    class ConsoleSpinner : IDisposable
+    public class ConsoleSpinner : IDisposable
     {
         private const string _sequence = @"/-\|";
         private int _counter = 0;
